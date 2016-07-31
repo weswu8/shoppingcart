@@ -1,0 +1,8 @@
+com/ecommerce/flashsales/AddGoodsR.class
+com/ecommerce/flashsales/CurrentStep.class
+com/ecommerce/flashsales/FlashSalesAccessLogger$FlashSalesAccessLog.class
+com/ecommerce/flashsales/RateLimiter.class
+com/ecommerce/flashsales/Goods.class
+com/ecommerce/flashsales/ShoppingCart.class
+com/ecommerce/flashsales/ShoppingCartApplication.class
+com/ecommerce/flashsales/FlashSalesAccessLogger.class
