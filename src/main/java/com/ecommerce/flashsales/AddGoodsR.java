@@ -1,4 +1,5 @@
 package com.ecommerce.flashsales;
+
 /***
  * 
  * @author wuwesley
@@ -12,6 +13,7 @@ public class AddGoodsR {
 	public int goodsQuantity;
 	public boolean isAllowed = false;
 	public boolean isThrottled = false;
+	public String version = "1.0";
 	
 	public String getSessionID() {
 		return sessionID;
@@ -48,12 +50,19 @@ public class AddGoodsR {
 	}
 	public void setIsThrottled(boolean isThrottled) {
 		this.isThrottled = isThrottled;
+	}	
+	
+	public String getVersion() {
+		return version;
+	}
+	public void setVersion(String version) {
+		this.version = version;
 	}
 	@Override
 	public String toString() {
 		return "AddGoodsR [sessionID=" + sessionID + ", userID=" + userID + ", goodsSKU=" + goodsSKU
 				+ ", goodsQuantity=" + goodsQuantity + ", isAllowed=" + isAllowed + ", isThrottled=" + isThrottled
-				+ "]";
+				+ ", version=" + version + "]";
 	}
 	
 }

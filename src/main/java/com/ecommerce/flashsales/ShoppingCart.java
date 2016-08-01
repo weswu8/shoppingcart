@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.Version;
 
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.exception.MemcachedException;
@@ -38,7 +39,10 @@ import net.rubyeye.xmemcached.exception.MemcachedException;
 @RestController
 @RequestMapping("/")
 public class  ShoppingCart {	
-    @Autowired
+    /*** indicate current version of this micro service ***/
+	public final String cVersion = "1.0";
+	
+	@Autowired
     private MemcachedClient memcachedClient;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private String allItemsKeyPerUser = null;
@@ -94,6 +98,7 @@ public class  ShoppingCart {
 		addGoodsR.setGoodsQuantity((int)goods.getGoodsQuantity());
 		addGoodsR.setIslowed(false);
 		addGoodsR.setIsThrottled(false);
+		addGoodsR.setVersion(cVersion);
 		
 		/*** prepare the json string for the store ***/
 		JSONObject jObj = new JSONObject();
@@ -201,6 +206,7 @@ public class  ShoppingCart {
 		addGoodsR.setGoodsSKU(goods.getGoodsSKU());
 		addGoodsR.setGoodsQuantity(goods.getGoodsQuantity());
 		addGoodsR.setIslowed(false);
+		addGoodsR.setVersion(cVersion);
 		
 		JSONObject jObj = new JSONObject();
 		if (goods.getGoodsSKU().length() > 0 && goods.getGoodsSKU() != null){
