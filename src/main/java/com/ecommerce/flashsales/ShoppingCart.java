@@ -44,7 +44,7 @@ public class  ShoppingCart {
 	
 	@Autowired
     private MemcachedClient memcachedClient;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger("SystemLog");
     private String allItemsKeyPerUser = null;
     private final String xNameSpace = "ShoppingCart";
 	FlashSalesAccessLogger fsAccessLogger = new FlashSalesAccessLogger();
