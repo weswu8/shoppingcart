@@ -12,6 +12,7 @@ import java.util.concurrent.TimeoutException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.aspectj.weaver.ast.And;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -106,6 +107,8 @@ public class  ShoppingCart {
 		jObj.put("userID",goods.getUserID());
 		jObj.put("goodsSKU",goods.getGoodsSKU());
 		jObj.put("goodsQuantity",String.valueOf(goods.getGoodsQuantity()));
+		jObj.put("totalQuantity",String.valueOf(goods.getTotalQuantity()));
+		jObj.put("quantityLimit",String.valueOf(goods.getTotalQuantity()));
 		
 		/*** set the start time for performance logging ***/
 		long startTime = System.currentTimeMillis();
@@ -129,10 +132,17 @@ public class  ShoppingCart {
  					fsAccessLogger.doAccessLog(httpRequest, httpResponse, goods.getSessionID(), CurrentStep.SHOPPINGCART.msgBody(), jObj.toString(), endTime-startTime, addGoodsR);
  					return addGoodsR;
  				}
- 				/*** find the exist one ***/
+ 				/*** find the exist one, so we should check the policy again***/
  				if (existGoods.getGoodsSKU() != null){
 					goods.setGoodsQuantity((existGoods.getGoodsQuantity()) + goods.getGoodsQuantity());
 					addGoodsR.setGoodsQuantity(goods.getGoodsQuantity());
+					/*** check the policy again, the zero value means no limit for this SKU ***/
+					if (goods.getQuantityLimit() != 0 && addGoodsR.goodsQuantity > goods.getQuantityLimit()){
+						long endTime = System.currentTimeMillis();
+	 					fsAccessLogger.doAccessLog(httpRequest, httpResponse, goods.getSessionID(), CurrentStep.SHOPPINGCART.msgBody(), jObj.toString(), endTime-startTime, addGoodsR);
+	 					return addGoodsR;
+					}
+					/*** pass the check ***/
 					updateGoodsInCart(httpRequest, httpResponse, goods);
  				}else{ /*** not found the exist one ***/
  					memcachedClient.set(md5Hashing(goods.getUserID(), goods.getGoodsSKU()), expirationValue, jObj.toString());
@@ -160,7 +170,7 @@ public class  ShoppingCart {
 	/***
 	 * Get the goods's info from the user's cart
 	 * Request sample : http://localhost:8080/sid/{sid}/userid/{userid}/sku/{sku}
-	 * Response sample : {"sessionID":"113e5d875f81","userID":"FS000001","goodsSKU":"QT3456","goodsQuantity":1,"totalQuantity":0}
+	 * Response sample : {"sessionID":"113e5d875f81","userID":"FS000001","goodsSKU":"QT3456","goodsQuantity":1,"isAllowed":true,"isThrottled":false}
 	 * @throws JsonProcessingException 
 	 * @throws NoSuchAlgorithmException 
 	 * @throws ParseException 

@@ -11,6 +11,7 @@ public class Goods {
 	public String goodsSKU;
 	public int goodsQuantity;
 	public int totalQuantity;
+	public int quantityLimit;
 	
 	public String getSessionID() {
 		return sessionID;
@@ -43,11 +44,16 @@ public class Goods {
 	public void setTotalQuantity(int totalQuantity) {
 		this.totalQuantity = totalQuantity;
 	}
+	public int getQuantityLimit() {
+		return quantityLimit;
+	}
+	public void setQuantityLimit(int quantityLimit) {
+		this.quantityLimit = quantityLimit;
+	}
 	@Override
 	public String toString() {
 		return "Goods [sessionID=" + sessionID + ", userID=" + userID + ", goodsSKU=" + goodsSKU + ", goodsQuantity="
-				+ goodsQuantity + ", totalQuantity=" + totalQuantity + "]";
-	}
-	
+				+ goodsQuantity + ", totalQuantity=" + totalQuantity + ", quantityLimit=" + quantityLimit + "]";
+	}	
 	
 }
