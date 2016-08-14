@@ -111,8 +111,7 @@ public class  ShoppingCart {
 		long startTime = System.currentTimeMillis();
 		if (goods.getSessionID().length() > 0 && goods.getUserID().length() > 0 && goods.getGoodsSKU().length() > 0){
  			try {				
- 				/*** check for the exist goods ***/
- 				Goods existGoods = getGoodsByUidSKU(goods.getUserID(), goods.getGoodsSKU());
+ 				
  				/*** rate limiter checking ***/
  				if (ShoppingCartApplication.rateLimiter.consume(consumeCount) == false){
  					addGoodsR.setIsThrottled(true);
@@ -120,6 +119,10 @@ public class  ShoppingCart {
  					fsAccessLogger.doAccessLog(httpRequest, httpResponse, goods.getSessionID(), CurrentStep.SHOPPINGCART.msgBody(), jObj.toString(), endTime-startTime, addGoodsR);
  					return addGoodsR;
  				}
+ 				
+ 				/*** check for the exist goods ***/
+ 				Goods existGoods = getGoodsByUidSKU(goods.getUserID(), goods.getGoodsSKU());
+ 				
  				/*** check the frozen item ***/
  				if (freezeGoodsBySKU(goods.getGoodsSKU(), goods.getGoodsQuantity(), goods.getTotalQuantity()) == false){
  					long endTime = System.currentTimeMillis();
@@ -156,13 +159,57 @@ public class  ShoppingCart {
 	
 	/***
 	 * Get the goods's info from the user's cart
-	 * Request sample : http://localhost:8080/userid/{userid}/sku/{sku}
+	 * Request sample : http://localhost:8080/sid/{sid}/userid/{userid}/sku/{sku}
 	 * Response sample : {"sessionID":"113e5d875f81","userID":"FS000001","goodsSKU":"QT3456","goodsQuantity":1,"totalQuantity":0}
+	 * @throws JsonProcessingException 
 	 * @throws NoSuchAlgorithmException 
 	 * @throws ParseException 
 	 */
-	@RequestMapping(method = RequestMethod.GET, value = "/userid/{userid}/sku/{sku}")	
-	public Goods getGoodsByUidSKU(@PathVariable("userid") String userid, @PathVariable("sku") String sku) throws NoSuchAlgorithmException, ParseException {
+	@SuppressWarnings("unchecked")
+	@RequestMapping(method = RequestMethod.GET, value = "/sid/{sid}/userid/{userid}/sku/{sku}")
+	public AddGoodsR getGoodsByUidSKUService(HttpServletRequest httpRequest, HttpServletResponse httpResponse, @PathVariable("sid") String sid, @PathVariable("userid") String userid,  @PathVariable("sku") String sku) throws JsonProcessingException, NoSuchAlgorithmException, ParseException{
+		/*** initialize the result ***/
+		AddGoodsR addGoodsR = new AddGoodsR();
+		addGoodsR.setSessionID(sid);
+		addGoodsR.setUserID(userid);
+		addGoodsR.setGoodsSKU(sku);
+		addGoodsR.setGoodsQuantity(0);
+		addGoodsR.setIslowed(false);
+		addGoodsR.setIsThrottled(false);
+		addGoodsR.setVersion(cVersion);
+		
+		/*** prepare the json string for the store ***/
+		JSONObject jObj = new JSONObject();
+		jObj.put("sessionID",addGoodsR.getSessionID());
+		jObj.put("userID",addGoodsR.getUserID());
+		jObj.put("goodsSKU",addGoodsR.getGoodsSKU());
+		jObj.put("goodsQuantity",String.valueOf(addGoodsR.getGoodsQuantity()));
+		
+		/*** set the start time for performance logging ***/
+		long startTime = System.currentTimeMillis();
+		/*** rate limiter checking ***/
+		if (ShoppingCartApplication.rateLimiter.consume(consumeCount) == false){
+			addGoodsR.setIsThrottled(true);
+			long endTime = System.currentTimeMillis();
+			fsAccessLogger.doAccessLog(httpRequest, httpResponse, addGoodsR.getSessionID(), CurrentStep.SHOPPINGCART.msgBody(), jObj.toString(), endTime-startTime, addGoodsR);
+			return addGoodsR;
+		}
+		/*** check for the exist goods ***/
+		Goods existGoods = getGoodsByUidSKU(addGoodsR.getUserID(), addGoodsR.getGoodsSKU());
+		/*** update the result ***/
+		addGoodsR.setGoodsQuantity(existGoods.goodsQuantity);
+		/*** return the result ***/
+		return addGoodsR;
+	}
+	/***
+	 * 
+	 * @param userid
+	 * @param sku
+	 * @return goods.class
+	 * @throws NoSuchAlgorithmException
+	 * @throws ParseException
+	 */
+	public Goods getGoodsByUidSKU(String userid,String sku) throws NoSuchAlgorithmException, ParseException {
 		Object mObject = null;
 		Goods goods = new Goods() ;
 		if (userid.length() > 0 && sku.length() > 0){
