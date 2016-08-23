@@ -37,6 +37,8 @@ System Architecture
 
 Service API
 ====
+|Name |Path | Method  |  Request Body   |  Response Body  |
+|-----|-----|---------|-----------------|-----------------|
 |doAddGoodsToCart|/add|POST| {"sessionID":"113e5d875f81","userID":"UID0000000001","goodsSKU":"SKU0002","goodsQuantity":1,"totalQuantity":990000,"quantityLimit":5} |{"sessionID":"113e5d875f81","userID":"UID0000000001","goodsSKU":"SKU0002","goodsQuantity":1,"isAllowed":true,"isThrottled":false,"version":"1.0"}|
 |findAllItemsByUserID|/all/userid/{uid} | GET | None | [{"sessionID":null,"userID":null,"goodsSKU":null,"goodsQuantity":0,"totalQuantity":0,"quantityLimit":0}]|
 |getGoodsByUidSKU|/sid/{sid}/userid/{uid}/sku/{sku} | GET | None | {"sessionID":"SID000001","userID":"UID0000000001","goodsSKU":"SKU0002","goodsQuantity":1,"isAllowed":false,"isThrottled":false,"version":"1.0"}|
