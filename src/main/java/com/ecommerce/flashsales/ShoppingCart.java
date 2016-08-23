@@ -46,7 +46,7 @@ public class  ShoppingCart {
 	
 	@Autowired
     private MemcachedClient memcachedClient;
-    private final Logger logger = LoggerFactory.getLogger("SystemLog");
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
     private String allItemsKeyPerUser = null;
     private final String xNameSpace = "ShoppingCart";
 	FlashSalesAccessLogger fsAccessLogger = new FlashSalesAccessLogger();
@@ -82,7 +82,7 @@ public class  ShoppingCart {
     /***
 	 * Create a new the goods's info within the user's cart
 	 * Request url : http://localhost:8080/add/
-	 * Request sample : {"sessionID":"113e5d875f81","userID":"FS000001","goodsSKU":"QT3456","goodsQuantity":1,"totalQuantity":100} 
+	 * Request sample : {"sessionID":"113e5d875f81","userID":"FS000001","goodsSKU":"QT3456","goodsQuantity":1,"totalQuantity":100,"quantityLimit":0} 
 	 * Response sample : {"sessionID":"113e5d875f81","userID":"FS000001","goodsSKU":"QT3456","goodsQuantity":1,"isAllowed":true,"isThrottled":false}
      * @throws ParseException 
      * @throws NoSuchAlgorithmException 
